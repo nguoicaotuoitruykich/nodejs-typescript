@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { checkSchema, ValidationChain } from 'express-validator'
 import { RunnableValidationChains } from 'express-validator/lib/middlewares/schema'
 import { validate } from '../utils/validation'
+import usersServices from '../services/users.services'
 
 export const loginValidator = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   const { email, password } = req.body
@@ -14,7 +15,7 @@ export const loginValidator = async (req: Request, res: Response, next: NextFunc
 }
 
 export const registerValidator = validate(checkSchema({
-  name: {
+  username: {
     isLength: {
       options: {
         min: 1,
@@ -29,8 +30,12 @@ export const registerValidator = validate(checkSchema({
     isEmail: true,
     trim: true,
     custom: {
-      options: (value) => {
-        console.log(value)
+      options: async (value) => {
+       const isExitEmail = await usersServices.checkEmailExit(value)
+       if(isExitEmail) {
+        throw new Error('Email already Exit!')
+       }
+       return true
       }
     }
   },
@@ -43,7 +48,6 @@ export const registerValidator = validate(checkSchema({
         max: 100
       }
     },
-    
   },
   confirm_password: {
     notEmpty: true,
@@ -73,6 +77,6 @@ export const registerValidator = validate(checkSchema({
         strictSeparator: true
       }
     }
-  }
+  },
 }))
 

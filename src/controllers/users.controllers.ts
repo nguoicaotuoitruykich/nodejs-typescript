@@ -15,7 +15,7 @@ export const  loginController  = async  (req: Request, res: Response):Promise<vo
     error: 'Login Fail'
   })
 }
-export const  registerController  = async  (req: Request, res: Response, next: NextFunction):Promise<void> => {
+export const  registerController  = async(req: Request, res: Response, next: NextFunction):Promise<void> => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
      res.status(400).json({ errors: errors.mapped() })
