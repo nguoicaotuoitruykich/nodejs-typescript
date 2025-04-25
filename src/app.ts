@@ -1,7 +1,6 @@
 import userRouter from './routes/users.routes'
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
-const { query, validationResult, matchedData } = require('express-validator')
 const express = require('express')
 const app = express()
 const port = 3001
@@ -15,12 +14,9 @@ app.use('/user', userRouter)
 const mongoose = require('mongoose');
 
 
-mongoose.connect('mongodb://127.0.0.1:27017/mydatabase', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
+mongoose.connect('mongodb://127.0.0.1:27017/mydatabase').then(() => {
   console.log('Kết nối MongoDB thành công!');
-}).catch((err) => {
+}).catch((err: any) => {
   console.error('Lỗi kết nối MongoDB:', err);
 });
 

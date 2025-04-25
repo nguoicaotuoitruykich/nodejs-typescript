@@ -1,7 +1,8 @@
 // models/User.ts
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 const userSchema = new mongoose.Schema({
+  // _id: Schema.Types.ObjectId,
   username: String,
   email: String,
   password: String,

@@ -1,6 +1,7 @@
 
 import mongoose from 'mongoose';
-import User from '../models/user.model';
+import User from '../models/schema/user.model';
+
 
 
 class UsersServices {
@@ -13,10 +14,12 @@ class UsersServices {
   //     })
   //   )
   // }
+
   async checkEmailExit(email: string) {
    const user = await User.findOne({email})
    return user
   }
+
     
 }
 

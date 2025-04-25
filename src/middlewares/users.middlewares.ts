@@ -71,6 +71,7 @@ export const registerValidator = validate(checkSchema({
     }
   },
   date_of_birth: {
+    notEmpty: false,
     isISO8601: {
       options: {
         strict: true,
