@@ -1,8 +1,4 @@
-
-import mongoose from 'mongoose';
-import User from '../models/schema/user.model';
-
-
+import User from '../models/schema/user.model'
 
 class UsersServices {
   // async register(payload: {email: string, password: string}) {
@@ -16,13 +12,10 @@ class UsersServices {
   // }
 
   async checkEmailExit(email: string) {
-   const user = await User.findOne({email})
-   return user
+    const user = await User.findOne({ email })
+    return user
   }
-
-    
 }
 
- const usersServices = new UsersServices()
- export default usersServices
-
+const usersServices = new UsersServices()
+export default usersServices

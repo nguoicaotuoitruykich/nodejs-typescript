@@ -20,7 +20,7 @@ export const registerController = async (req: Request, res: Response, next: Next
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
     res.status(400).json({ errors: errors.mapped() })
-    return
+    next()
   }
 
   const signAccessToken = async (userId: string) => {
@@ -48,20 +48,16 @@ export const registerController = async (req: Request, res: Response, next: Next
   }
 
   try {
-    const { username, password, email, date_of_birth = Date.now() } = req.body;
+    const { username, password, email, date_of_birth = Date.now() } = req.body
     const newUser = new User({
       username,
       password,
       email,
       date_of_birth
-    });
+    })
     const resultUser = await newUser.save()
     const userId = resultUser._id.toString()
-    const [accessToken, refreshToken] = await Promise.all([
-      signAccessToken(userId),
-      signRefreshToken(userId)
-    ])
-    
+    const [accessToken, refreshToken] = await Promise.all([signAccessToken(userId), signRefreshToken(userId)])
 
     res.send({
       message: `tạo mới tài khoản ${username} thành công`,
@@ -70,7 +66,6 @@ export const registerController = async (req: Request, res: Response, next: Next
         accessToken,
         refreshToken
       }
-      
     })
   } catch (error) {
     res.send({

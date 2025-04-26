@@ -1,7 +1,7 @@
 import userRouter from './routes/users.routes'
-const cookieParser = require('cookie-parser')
-const cors = require('cors')
-const express = require('express')
+import cookieParser from 'cookie-parser'
+import cors from 'cors'
+import express from 'express'
 const app = express()
 const port = 3001
 app.use(cookieParser())
@@ -10,41 +10,21 @@ app.use(cors())
 
 app.use('/user', userRouter)
 
+import mongoose from 'mongoose'
 
-const mongoose = require('mongoose');
-
-
-mongoose.connect('mongodb://127.0.0.1:27017/mydatabase').then(() => {
-  console.log('Kết nối MongoDB thành công!');
-}).catch((err: any) => {
-  console.error('Lỗi kết nối MongoDB:', err);
-});
-
+mongoose
+  .connect('mongodb://127.0.0.1:27017/mydatabase')
+  .then(() => {
+    console.log('Kết nối MongoDB thành công!')
+  })
+  .catch((err: unknown) => {
+    if (err instanceof Error) {
+      console.error('Lỗi kết nối MongoDB:', err.message)
+    } else {
+      console.error('Lỗi không xác định:', err)
+    }
+  })
 
 app.listen(port, () => {
   console.log(`\x1b[32m------------------------Server running port ${port}------------------------\x1b[0m`)
 })
-
-// app.get('/hello', 
-// query('person')
-// .notEmpty()
-// .withMessage('khong dc de trong')
-// .escape(), (req, res) => {
-//   const err = validationResult(req)
-//   if (err.isEmpty()) {
-//     const data = matchedData(req)
-//     return res.send(`Hello, ${req.query.person}!`)
-//   }
-//   return res.status(400).json({ errors: err.array() })
-// })
-
-// app.get('/set-cookie', (req, res) => {
-//   res.cookie('username', 'tung ok', { maxAge: 3600 * 1000 })
-//   res.send('Cookie da duoc tao thanh cong')
-// })
-
-// app.get('/get-cookie', (req, res) => {
-//   const username = req.cookies.username
-//   res.send(`thong tin username la ${username}`)
-// })
-

@@ -1,5 +1,5 @@
 // models/User.ts
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose'
 
 const userSchema = new mongoose.Schema({
   // _id: Schema.Types.ObjectId,
@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   password: String,
   confirm_password: String,
   date_of_birth: Date
-});
+})
 
-const User = mongoose.model('User', userSchema);
-export default User;
+const User = mongoose.model('User', userSchema)
+export default User

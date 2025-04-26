@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from 'express'
-import { checkSchema, ValidationChain } from 'express-validator'
-import { RunnableValidationChains } from 'express-validator/lib/middlewares/schema'
+import { checkSchema } from 'express-validator'
 import { validate } from '../utils/validation'
 import usersServices from '../services/users.services'
 
-export const loginValidator = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+export const loginValidator = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { email, password } = req.body
   if (!email || !password) {
     res.status(400).json({
@@ -14,70 +13,71 @@ export const loginValidator = async (req: Request, res: Response, next: NextFunc
   next()
 }
 
-export const registerValidator = validate(checkSchema({
-  username: {
-    isLength: {
-      options: {
-        min: 1,
-        max: 100
-      }
-    },
-    notEmpty: true,
-    trim: true,
-  },
-  email: {
-    notEmpty: true,
-    isEmail: true,
-    trim: true,
-    custom: {
-      options: async (value) => {
-       const isExitEmail = await usersServices.checkEmailExit(value)
-       if(isExitEmail) {
-        throw new Error('Email already Exit!')
-       }
-       return true
-      }
-    }
-  },
-  password: {
-    notEmpty: true,
-    isString: true,
-    isLength: {
-      options: {
-        min: 6,
-        max: 100
-      }
-    },
-  },
-  confirm_password: {
-    notEmpty: true,
-    isStrongPassword: {
-      options: { 
-        minLength: 6,
-        minLowercase: 1,
-        minUppercase: 1,
-        minNumbers: 1,
-        minSymbols: 1
-      },
-      errorMessage: 'bạn đã gặp lỗi'
-    },
-    custom: {
-      options: (value, {req}) => {
-        if(value !== req.body.password) {
-          throw new Error('xác nhận password chưa khớp')
+export const registerValidator = validate(
+  checkSchema({
+    username: {
+      isLength: {
+        options: {
+          min: 1,
+          max: 100
         }
-        return true
+      },
+      notEmpty: true,
+      trim: true
+    },
+    email: {
+      notEmpty: true,
+      isEmail: true,
+      trim: true,
+      custom: {
+        options: async (value) => {
+          const isExitEmail = await usersServices.checkEmailExit(value)
+          if (isExitEmail) {
+            throw new Error('Email already Exit!')
+          }
+          return true
+        }
+      }
+    },
+    password: {
+      notEmpty: true,
+      isString: true,
+      isLength: {
+        options: {
+          min: 6,
+          max: 100
+        }
+      }
+    },
+    confirm_password: {
+      notEmpty: true,
+      isStrongPassword: {
+        options: {
+          minLength: 6,
+          minLowercase: 1,
+          minUppercase: 1,
+          minNumbers: 1,
+          minSymbols: 1
+        },
+        errorMessage: 'bạn đã gặp lỗi'
+      },
+      custom: {
+        options: (value, { req }) => {
+          if (value !== req.body.password) {
+            throw new Error('xác nhận password chưa khớp')
+          }
+          return true
+        }
+      }
+    },
+    date_of_birth: {
+      notEmpty: false,
+      isISO8601: {
+        options: {
+          strict: true,
+          strictSeparator: true
+        }
       }
     }
-  },
-  date_of_birth: {
-    notEmpty: false,
-    isISO8601: {
-      options: {
-        strict: true,
-        strictSeparator: true
-      }
-    }
-  },
-}))
-
+  })
+)
