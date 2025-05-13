@@ -1,17 +1,39 @@
-import { Request, Response, NextFunction } from 'express'
+// import { Request, Response, NextFunction } from 'express'
 import { checkSchema } from 'express-validator'
 import { validate } from '../utils/validation'
 import usersServices from '../services/users.services'
+import { USERS_MESSAGES } from '../constants/users.const'
 
-export const loginValidator = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { email, password } = req.body
-  if (!email || !password) {
-    res.status(400).json({
-      error: 'missing email or password'
-    })
-  }
-  next()
-}
+export const loginValidator = validate(
+  checkSchema({
+    email: {
+      notEmpty: true,
+      isEmail: {
+        errorMessage: 'Email cannot empty'
+      },
+      trim: true,
+      custom: {
+        options: async (value) => {
+          const isExitEmail = await usersServices.checkEmailExit(value)
+          if (!isExitEmail) {
+            throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
+          }
+          return true
+        }
+      }
+    },
+    password: {
+      notEmpty: true,
+      isString: true,
+      isLength: {
+        options: {
+          min: 6,
+          max: 100
+        }
+      }
+    }
+  })
+)
 
 export const registerValidator = validate(
   checkSchema({
