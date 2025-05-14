@@ -1,14 +1,26 @@
-// models/User.ts
-import mongoose from 'mongoose'
+import { Collection } from 'mongodb'
+import User from './user'
+import databaseServices from '../../services/database.services'
 
-const userSchema = new mongoose.Schema({
-  // _id: Schema.Types.ObjectId,
-  username: String,
-  email: String,
-  password: String,
-  confirm_password: String,
-  date_of_birth: Date
-})
+class UserModel {
+  private collection: Collection<User> | null = null
+  contructor() {
+    databaseServices.connect().then((db) => {
+      this.collection = db.collection<User>('users')
+    })
+  }
 
-const User = mongoose.model('User', userSchema)
-export default User
+  async insertUser(user: Omit<User, '_id' | 'createdAt' | 'updatedAt'>) {
+    if (!this.collection) {
+      throw new Error('Database is not ready')
+    }
+    const result = await this.collection.insertOne({
+      ...user,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    })
+    return result.insertedId
+  }
+}
+
+export const userModel = new UserModel()

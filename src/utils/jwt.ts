@@ -16,8 +16,7 @@ export const signToken = ({
   payload: string | Buffer | object
   privateKey?: Secret | PrivateKey | string
   options?: SignOptions
-}) => {
-  // const options: jwt.SignOptions = { expiresIn: '1h' };
+}): Promise<string> => {
   return new Promise((resolve, reject) => {
     jwt.sign(payload, privateKey, options, (error, token) => {
       if (error) {

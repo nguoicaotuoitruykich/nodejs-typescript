@@ -1,19 +1,36 @@
-import User from '../models/schema/user.model'
+import { signToken } from '../utils/jwt'
+import { TokenType } from '../constants/users.const'
+import databaseServices from './database.services'
 
 class UsersServices {
-  // async register(payload: {email: string, password: string}) {
-  //   const {email, password} = payload
-  //   const result = await databaseServices.users.insertOne(
-  //     new User({
-  //       email,
-  //       password
-  //     })
-  //   )
-  // }
+  signAccessToken = async (userId: string): Promise<string> => {
+    return await signToken({
+      payload: {
+        userId,
+        tokenType: TokenType.AccessToken
+      },
+      options: {
+        expiresIn: '1h'
+      }
+    })
+  }
+
+  signRefreshToken = async (userId: string): Promise<string> => {
+    return await signToken({
+      payload: {
+        userId,
+        tokenType: TokenType.RefreshToken
+      },
+      options: {
+        expiresIn: '1d'
+      }
+    })
+  }
 
   async checkEmailExit(email: string) {
-    const user = await User.findOne({ email })
-    return user
+    const db = await databaseServices.connect()
+    const dataUser = await db.collection('users').findOne({ email })
+    return dataUser
   }
 }
 

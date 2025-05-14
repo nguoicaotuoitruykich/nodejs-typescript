@@ -1,12 +1,10 @@
 import { Request, Response, NextFunction } from 'express'
 import { validationResult } from 'express-validator'
-import User from '../models/schema/user.model'
-import { signToken } from '../utils/jwt'
-import { TokenType } from '../constants/users.const'
+import usersServices from '../services/users.services'
+import { userModel } from '../models/schema/user.model'
+import { ObjectId } from 'mongodb'
 
-export const loginController = async (req: Request, res: Response): Promise<void> => {
-  
-}
+export const loginController = async (req: Request, res: Response): Promise<void> => {}
 export const registerController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -14,52 +12,34 @@ export const registerController = async (req: Request, res: Response, next: Next
     next()
   }
 
-  const signAccessToken = async (userId: string) => {
-    return await signToken({
-      payload: {
-        userId,
-        tokenType: TokenType.AccessToken
-      },
-      options: {
-        expiresIn: '1h'
-      }
-    })
-  }
-
-  const signRefreshToken = async (userId: string) => {
-    return await signToken({
-      payload: {
-        userId,
-        tokenType: TokenType.RefreshToken
-      },
-      options: {
-        expiresIn: '1d'
-      }
-    })
-  }
-
   try {
     const { username, password, email, date_of_birth = Date.now() } = req.body
-    const newUser = new User({
+    const newUserId = new ObjectId().toString()
+    const [access_token, refresh_token] = await Promise.all([
+      usersServices.signAccessToken(newUserId),
+      usersServices.signRefreshToken(newUserId)
+    ])
+    const newUser = await userModel.insertUser({
       username,
       password,
       email,
-      date_of_birth
+      date_of_birth,
+      access_token,
+      refresh_token
     })
-    const resultUser = await newUser.save()
-    const userId = resultUser._id.toString()
-    const [accessToken, refreshToken] = await Promise.all([signAccessToken(userId), signRefreshToken(userId)])
+    // const resultUser: any = await databaseServices.db?.collection('users').insertOne(newUser)
+    // const userId = resultUser.insertedId._id.toString()
 
     res.send({
       message: `tạo mới tài khoản ${username} thành công`,
       result: {
-        insertedID: resultUser._id,
-        accessToken,
-        refreshToken
+        id: newUser,
+        access_token,
+        refresh_token
       }
     })
   } catch (error) {
-    res.send({
+    res.status(500).send({
       message: error
     })
   }
