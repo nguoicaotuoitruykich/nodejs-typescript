@@ -3,12 +3,16 @@ import User from './user'
 import databaseServices from '../../services/database.services'
 
 class UserModel {
-  private collection: Collection<User> | null = null
-  contructor() {
+  constructor(private collection: Collection<User> | null = null) {
     databaseServices.connect().then((db) => {
       this.collection = db.collection<User>('users')
     })
   }
+
+  // async init() {
+  //   const db = await databaseServices.connect();
+  //   this.collection = db.collection<User>('users');
+  // }
 
   async insertUser(user: Omit<User, '_id' | 'createdAt' | 'updatedAt'>) {
     if (!this.collection) {

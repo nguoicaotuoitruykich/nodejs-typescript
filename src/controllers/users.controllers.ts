@@ -27,8 +27,6 @@ export const registerController = async (req: Request, res: Response, next: Next
       access_token,
       refresh_token
     })
-    // const resultUser: any = await databaseServices.db?.collection('users').insertOne(newUser)
-    // const userId = resultUser.insertedId._id.toString()
 
     res.send({
       message: `tạo mới tài khoản ${username} thành công`,

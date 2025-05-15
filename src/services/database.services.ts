@@ -1,18 +1,18 @@
 import { Db, MongoClient } from 'mongodb'
 
-const uri = 'mongodb://127.0.0.1:27017/'
+const dbLocal = 'mongodb://127.0.0.1:27017/'
 
 class DatabaseServices {
   private client: MongoClient
   public db: Db | null = null
   constructor() {
-    this.client = new MongoClient(process.env.MONGODB_URI as string)
+    this.client = new MongoClient((process.env.MONGODB_URI as string) || dbLocal)
   }
   async connect(): Promise<Db> {
     if (!this.db) {
       await this.client.connect()
       this.db = this.client.db('mydatabase')
-      console.log('✅ MongoDB connected')
+      // console.log('✅ MongoDB connected')
     }
     return this.db
   }

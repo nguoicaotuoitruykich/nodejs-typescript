@@ -9,6 +9,7 @@ export default defineConfig([
   { files: ['**/*.{js,mjs,cjs,ts}'] },
   { files: ['**/*.{js,mjs,cjs,ts}'], languageOptions: { globals: globals.browser } },
   { files: ['**/*.{js,mjs,cjs,ts}'], plugins: { js }, extends: ['js/recommended'] },
+  { ignores: ['**/node_modules/', '**/dist/'] },
   tseslint.configs.recommended,
   {
     plugins: {
@@ -31,7 +32,6 @@ export default defineConfig([
           jsxSingleQuote: true
         }
       ]
-    },
-    ignores: ['**/node_modules/', '**/dist/']
+    }
   }
 ])

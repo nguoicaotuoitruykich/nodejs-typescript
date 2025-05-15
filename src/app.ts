@@ -8,7 +8,7 @@ const port = 3001
 app.use(cookieParser())
 app.use(express.json())
 app.use(cors())
-
+databaseServices.connect()
 app.use('/user', userRouter)
 app.use('/test', (req: Request, res: Response) => {
   res.write('test pageeeeeeeeeeeeee')
@@ -16,8 +16,7 @@ app.use('/test', (req: Request, res: Response) => {
 app.use('/', (req: Request, res: Response) => {
   res.write('homepage')
 })
-databaseServices.connect()
 
 app.listen(port, () => {
-  console.log(`\x1b[32m------------------------Server running port ${port}------------------------\x1b[0m`)
+  console.log(`\x1b[32m-------------✅ Server running port ${port}----------------\x1b[0m`)
 })
