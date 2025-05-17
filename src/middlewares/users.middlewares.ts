@@ -3,6 +3,8 @@ import { checkSchema } from 'express-validator'
 import { validate } from '../utils/validation'
 import usersServices from '../services/users.services'
 import { USERS_MESSAGES } from '../constants/users.const'
+import databaseServices from '../services/database.services'
+import User from '../models/schema/user'
 
 export const loginValidator = validate(
   checkSchema({
@@ -13,11 +15,13 @@ export const loginValidator = validate(
       },
       trim: true,
       custom: {
-        options: async (value) => {
-          const isExitEmail = await usersServices.checkEmailExit(value)
-          if (!isExitEmail) {
+        options: async (email, { req }) => {
+          const db = databaseServices.getDB()
+          const user = await db.collection<User>('users').findOne({ email })
+          if (!user) {
             throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
           }
+          req.user = user
           return true
         }
       }

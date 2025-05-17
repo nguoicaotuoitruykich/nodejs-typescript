@@ -4,7 +4,19 @@ import usersServices from '../services/users.services'
 import { userModel } from '../models/schema/user.model'
 import { ObjectId } from 'mongodb'
 
-export const loginController = async (req: Request, res: Response): Promise<void> => {}
+export const loginController = async (req: Request, res: Response): Promise<void> => {
+  const user = req.user
+  const userId = user._id?.toString()
+  if (!userId) {
+    throw new Error('userId is null')
+  }
+  const [access_token, refresh_token] = await usersServices.setRefreshTokenAndAccessToken(userId)
+  console.log({ access_token, refresh_token })
+  res.status(200).json({
+    message: 'login success',
+    result: { access_token, refresh_token }
+  })
+}
 export const registerController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -15,10 +27,7 @@ export const registerController = async (req: Request, res: Response, next: Next
   try {
     const { username, password, email, date_of_birth = Date.now() } = req.body
     const newUserId = new ObjectId().toString()
-    const [access_token, refresh_token] = await Promise.all([
-      usersServices.signAccessToken(newUserId),
-      usersServices.signRefreshToken(newUserId)
-    ])
+    const [access_token, refresh_token] = await usersServices.setRefreshTokenAndAccessToken(newUserId)
     const newUser = await userModel.insertUser({
       username,
       password,

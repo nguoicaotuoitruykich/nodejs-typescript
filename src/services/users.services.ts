@@ -28,9 +28,12 @@ class UsersServices {
   }
 
   async checkEmailExit(email: string) {
-    const db = await databaseServices.connect()
-    const dataUser = await db.collection('users').findOne({ email })
-    return dataUser
+    const dataUser = await databaseServices.getDB().collection('users').findOne({ email })
+    return Boolean(dataUser)
+  }
+
+  async setRefreshTokenAndAccessToken(userId: string) {
+    return Promise.all([usersServices.signAccessToken(userId), usersServices.signRefreshToken(userId)])
   }
 }
 
