@@ -1,4 +1,5 @@
-import { Db, MongoClient } from 'mongodb'
+import { Collection, Db, MongoClient } from 'mongodb'
+import User from '../models/schema/user'
 
 const dbLocal = 'mongodb://127.0.0.1:27017/'
 
@@ -16,7 +17,10 @@ class DatabaseServices {
     }
     return this.db
   }
-
+  get users(): Collection<User> {
+    if (!this.db) throw new Error('Database not connected.')
+    return this.db?.collection<User>('users')
+  }
   getDB(): Db {
     if (!this.db) throw new Error('Database not connected.')
     return this.db

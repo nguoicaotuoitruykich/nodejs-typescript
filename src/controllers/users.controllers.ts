@@ -25,7 +25,7 @@ export const registerController = async (req: Request, res: Response, next: Next
   }
 
   try {
-    const { username, password, email, date_of_birth = Date.now() } = req.body
+    const { username, password, email, date_of_birth } = req.body
     const newUserId = new ObjectId().toString()
     const [access_token, refresh_token] = await usersServices.setRefreshTokenAndAccessToken(newUserId)
     const newUser = await userModel.insertUser({
