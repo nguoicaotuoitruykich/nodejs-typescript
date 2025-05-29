@@ -17,7 +17,7 @@ export const loginValidator = validate(
       custom: {
         options: async (email, { req }) => {
           const db = databaseServices.getDB()
-          const user = await db.collection<User>('users').findOne({ email })
+          const user = await db.collection<User>('users').findOne({ email, password: req.body.password })
           if (!user) {
             throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
           }
